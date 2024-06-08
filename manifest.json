@@ -1,0 +1,146 @@
+{
+	"id": "0d0b6099-abbc-4a76-b444-20224d151a7c",
+	"acceptMappedClaims": null,
+	"accessTokenAcceptedVersion": 2,
+	"addIns": [],
+	"allowPublicClient": true,
+	"appId": "b08411fb-31bd-4a47-9468-4929cda96046",
+	"appRoles": [],
+	"oauth2AllowUrlPathMatching": false,
+	"createdDateTime": "2024-06-05T06:46:50Z",
+	"description": null,
+	"certification": null,
+	"disabledByMicrosoftStatus": null,
+	"groupMembershipClaims": null,
+	"identifierUris": [
+		"api://5138-2406-b400-b4-2271-a9bf-4245-66e6-7364.ngrok-free.app/botid-b08411fb-31bd-4a47-9468-4929cda96046"
+	],
+	"informationalUrls": {
+		"termsOfService": null,
+		"support": null,
+		"privacy": null,
+		"marketing": null
+	},
+	"keyCredentials": [],
+	"knownClientApplications": [],
+	"logoUrl": null,
+	"logoutUrl": null,
+	"name": "Teams-Bot",
+	"notes": null,
+	"oauth2AllowIdTokenImplicitFlow": true,
+	"oauth2AllowImplicitFlow": true,
+	"oauth2Permissions": [
+		{
+			"adminConsentDescription": "Allows Teams to call the app’s web APIs as the current user",
+			"adminConsentDisplayName": "Enter Teams can access the user’s profile",
+			"id": "8c0da8d0-6732-46bc-b56b-0d8a9a3fb585",
+			"isEnabled": true,
+			"lang": null,
+			"origin": "Application",
+			"type": "User",
+			"userConsentDescription": "Enable Teams to call this app’s APIs with the same rights as the user",
+			"userConsentDisplayName": "Teams can access the user profile and make requests on the user’s behalf",
+			"value": "access_as_user"
+		}
+	],
+	"oauth2RequirePostResponse": false,
+	"optionalClaims": null,
+	"orgRestrictions": [],
+	"parentalControlSettings": {
+		"countriesBlockedForMinors": [],
+		"legalAgeGroupRule": "Allow"
+	},
+	"passwordCredentials": [
+		{
+			"customKeyIdentifier": null,
+			"endDate": "2024-12-02T06:57:36.17Z",
+			"keyId": "575cd497-b77c-49ff-83c0-e0f11bb43666",
+			"startDate": "2024-06-05T06:57:36.17Z",
+			"value": null,
+			"createdOn": "2024-06-05T06:57:45.5045644Z",
+			"hint": "izM",
+			"displayName": "test-bot"
+		}
+	],
+	"preAuthorizedApplications": [
+		{
+			"appId": "1fec8e78-bce4-4aaf-ab1b-5451cc387264",
+			"permissionIds": [
+				"8c0da8d0-6732-46bc-b56b-0d8a9a3fb585"
+			]
+		},
+		{
+			"appId": "5e3ce6c0-2b1f-4285-8d4b-75ee78787346",
+			"permissionIds": [
+				"8c0da8d0-6732-46bc-b56b-0d8a9a3fb585"
+			]
+		}
+	],
+	"publisherDomain": "rishaanponnagmail.onmicrosoft.com",
+	"replyUrlsWithType": [
+		{
+			"url": "http://localhost:3958/callback",
+			"type": "Web"
+		},
+		{
+			"url": "https://token.botframework.com/.auth/web/redirect",
+			"type": "Web"
+		}
+	],
+	"requiredResourceAccess": [
+		{
+			"resourceAppId": "00000003-0000-0000-c000-000000000000",
+			"resourceAccess": [
+				{
+					"id": "ebf0f66e-9fb1-49e4-a278-222f76911cf4",
+					"type": "Scope"
+				},
+				{
+					"id": "38826093-1258-4dea-98f0-00003be2b8d0",
+					"type": "Scope"
+				},
+				{
+					"id": "f501c180-9344-439a-bca0-6cbf209fd270",
+					"type": "Scope"
+				},
+				{
+					"id": "9ff7295e-131b-4d94-90e1-69fde507ac11",
+					"type": "Scope"
+				},
+				{
+					"id": "7e9a077b-3711-42b9-b7cb-5fa5f3f7fea7",
+					"type": "Scope"
+				},
+				{
+					"id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+					"type": "Scope"
+				},
+				{
+					"id": "7b2449af-6ccd-4f4d-9f78-e550c193f0d1",
+					"type": "Role"
+				},
+				{
+					"id": "df021288-bdef-4463-88db-98f22de89214",
+					"type": "Role"
+				},
+				{
+					"id": "37f7f235-527c-4136-accd-4a02d197296e",
+					"type": "Scope"
+				},
+				{
+					"id": "14dad69e-099b-42c9-810b-d002981feec1",
+					"type": "Scope"
+				},
+				{
+					"id": "093f8818-d05f-49b8-95bc-9d2a73e9a43c",
+					"type": "Scope"
+				}
+			]
+		}
+	],
+	"samlMetadataUrl": null,
+	"signInUrl": null,
+	"signInAudience": "AzureADandPersonalMicrosoftAccount",
+	"tags": [],
+	"tokenEncryptionKeyId": null
+}
