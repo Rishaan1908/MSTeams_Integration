@@ -26,13 +26,23 @@ func initOAuthConfig() {
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		RedirectURL:  redirectURL,
-		// API Permissions
 		Scopes: []string{
 			"openid",
 			"profile",
 			"User.Read",
 			"Chat.ReadWrite",
 			"Chat.Create",
+			"ChannelMessage.Send",
+			"User.Read.All",
+			"User.ReadWrite.All",
+			"Team.ReadBasic.All",
+			"ChannelSettings.Read.All",
+			"Channel.ReadBasic.All",
+			"ChannelSettings.ReadWrite.All", // Add this scope to read and write channel settings
+			"Group.Read.All",                // Add this scope to read group info
+			"Group.ReadWrite.All",           // Add this scope to read and write group info
+			"Directory.Read.All",            // Add this scope to read directory info
+			"Directory.ReadWrite.All",
 		},
 		Endpoint: microsoft.AzureADEndpoint("common"),
 	}
@@ -51,38 +61,31 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, ok := session.Values["token"]; ok {
-		// Use the existing token if user has already been authenticated
 		fmt.Fprintf(w, "Already authenticated. <a href='/logout'>Logout</a> to use a different account.")
 		return
 	}
 
-	// Clear the session data, for a new login
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 
-	// Generate a new state parameter
 	state := "state"
 	session.Values["state"] = state
 	session.Save(r, w)
 
-	// Authorization URL
 	url := oauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "consent"))
 	log.Printf("Redirecting to URL: %s", url)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the session
 	session, err := store.Get(r, "auth-session")
 	if err != nil {
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
 		return
 	}
 
-	// Check for an error parameter in the query string
 	if err := r.URL.Query().Get("error"); err != "" {
 		if err == "access_denied" {
-			// User canceled the login
 			log.Println("User canceled the login process.")
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
@@ -92,14 +95,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Verify the state parameter
 	state := r.URL.Query().Get("state")
 	if state != "state" {
 		http.Error(w, "State parameter does not match", http.StatusBadRequest)
 		return
 	}
 
-	// Exchange the authorization code for an access token
 	ctx := context.Background()
 	code := r.URL.Query().Get("code")
 	token, err := oauthConfig.Exchange(ctx, code)
@@ -108,11 +109,9 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Store the token in the session
 	session.Values["token"] = token
 	session.Save(r, w)
 
-	// Print the token (in case debug)
 	fmt.Printf("Access Token: %s\n", token.AccessToken)
 
 	profile, err := getUserProfile(token)
@@ -121,6 +120,24 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//JSON format user profile
-	fmt.Fprintf(w, "Successfully Logged in!!\nUser Profile: %s\n", profile)
+	fmt.Printf("User Profile: %s\n", profile)
+
+	teamID, err := getTeamID(token, "Culminate-Test")
+	if err != nil {
+		http.Error(w, "Failed to get team ID: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	channelID, err := getChannelID(token, teamID, "TEST")
+	if err != nil {
+		http.Error(w, "Failed to get channel ID: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := sendChannelMessage(token, teamID, channelID, "Testing", "successful"); err != nil {
+		http.Error(w, "Failed to send message: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "Message sent successfully to the TEST channel in Culminate-Test team.")
 }
