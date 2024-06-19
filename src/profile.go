@@ -9,29 +9,36 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Display full user profile
-func getUserProfile(token *oauth2.Token) (string, error) {
+// UserProfile structure to include necessary fields
+type UserProfile struct {
+	ID    string `json:"id"`
+	Email string `json:"mail"`
+}
+
+// getUserProfile retrieves the user profile
+func getUserProfile(token *oauth2.Token) (UserProfile, error) {
 	client := oauthConfig.Client(context.Background(), token)
+
+	// Fetch user profile
 	resp, err := client.Get("https://graph.microsoft.com/v1.0/me")
 	if err != nil {
-		return "", fmt.Errorf("failed to get user profile: %w", err)
+		return UserProfile{}, fmt.Errorf("failed to get user profile: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to get user profile: status %d", resp.StatusCode)
+		return UserProfile{}, fmt.Errorf("failed to get user profile: status %d", resp.StatusCode)
 	}
 
-	var profile map[string]interface{}
+	var profile UserProfile
 	err = json.NewDecoder(resp.Body).Decode(&profile)
 	if err != nil {
-		return "", fmt.Errorf("failed to decode user profile: %w", err)
+		return UserProfile{}, fmt.Errorf("failed to decode user profile: %w", err)
 	}
 
-	profileJSON, err := json.MarshalIndent(profile, "", "  ")
-	if err != nil {
-		return "", fmt.Errorf("failed to marshal user profile: %w", err)
+	if resp.StatusCode != http.StatusOK {
+		return profile, fmt.Errorf("failed to get organization: status %d", resp.StatusCode)
 	}
 
-	return string(profileJSON), nil
+	return profile, nil
 }

@@ -22,6 +22,8 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/login", loginHandler)
 	r.HandleFunc("/callback", callbackHandler)
+	r.HandleFunc("/select-team", selectTeamHandler)
+	r.HandleFunc("/logout", logoutHandler)
 	http.Handle("/", r)
 
 	// Start the server
