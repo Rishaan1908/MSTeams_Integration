@@ -1,49 +1,45 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"strings"
 )
 
+// Login the user by starting a new OAuth session
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "auth-session")
 	if err != nil {
-		log.Printf("Failed to get session: %v", err)
-		//clear invalid cookie
 		clearAuthSessionCookie(w)
 		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return
 	}
-
-	// Check if already authenticated
-	if _, ok := session.Values["token"]; ok {
-		fmt.Fprintf(w, "Already authenticated. <a href='/logout'>Logout</a> to use a different account.")
-		return
-	}
-
-	// Clear existing session and start a new auth session
 	startNewAuthSession(session, r, w)
 }
 
-func callbackHandler(w http.ResponseWriter, r *http.Request) {
+// Logout the user by clearing the session and redirect them to new login page
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "auth-session")
 	if err != nil {
-		log.Printf("Failed to get session: %v", err)
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)
 		return
 	}
 
-	// Handle OAuth errors
-	if handleOAuthError(r, w) {
+	clearSession(session, r, w)
+	http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+}
+
+// Handle the callback from Microsoft OAuth
+func callbackHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := store.Get(r, "auth-session")
+	if err != nil {
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
 		return
 	}
 
-	state := r.URL.Query().Get("state")
-	if state != "state" {
-		log.Println("State parameter does not match")
-		http.Error(w, "State parameter does not match", http.StatusBadRequest)
+	if handleOAuthError(r, w) {
 		return
 	}
 
@@ -61,116 +57,101 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to save session", http.StatusInternalServerError)
 		return
 	}
-	profile, err := getUserProfile(token)
+
+	// Setup the environment (create Teams and Channel and upload app)
+	result, err := setupEnvironment(token.AccessToken)
 	if err != nil {
-		log.Printf("Failed to get user profile: %v", err)
-		http.Error(w, "Failed to get user profile: "+err.Error(), http.StatusInternalServerError)
+		log.Printf("Failed to setup environment: %v", err)
+		http.Error(w, "Failed to setup environment: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	teams, err := getUserTeams(token)
-	if err != nil {
-		log.Printf("Failed to get user teams: %v", err)
-		http.Error(w, "Failed to get user teams: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	renderTeamSelectionPage(w, profile.Email, teams)
+	// Display the result to the user
+	fmt.Fprint(w, result)
 }
 
-func selectTeamHandler(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "auth-session")
+func messagesHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("Failed to get session: %v", err)
-		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		log.Printf("Error reading request body: %v", err)
+		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
 
-	token, err := getTokenFromSession(session)
+	var activity Activity
+	err = json.Unmarshal(body, &activity)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		log.Printf("Error unmarshaling JSON: %v", err)
+		http.Error(w, "Failed to parse request body", http.StatusBadRequest)
 		return
 	}
 
-	teamID := r.FormValue("team")
-	if teamID == "" {
-		http.Error(w, "No team selected", http.StatusBadRequest)
-		return
+	if activity.Type == "message" && activity.Value.UserQuestion != "" {
+		// This is a card submission
+		handleCardResponse(w, activity)
+	} else if activity.Type == "message" {
+		// This is a new user message
+		handleNewUserMessage(activity)
 	}
 
-	// Check if the "culminate security" channel already exists
-	channelName := "TEST_CHANNEL_1"
-	channelID, err := getChannelID(token, teamID, channelName)
-	if err == nil {
-		// Channel already exists, display a message
-		fmt.Fprintf(w, "The 'Culminate Security' channel already exists in the selected team. Please look at your teams.")
-		//http.Error(w, "Channel EXISTS: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Create the channel if it doesn't exist
-	if err := createChannel(token, teamID, channelName); err != nil {
-		log.Printf("Failed to create channel: %v", err)
-		http.Error(w, "Failed to create channel: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	channelID, err = getChannelID(token, teamID, channelName)
-	if err != nil {
-		log.Printf("Failed to get channel ID: %v", err)
-		http.Error(w, "Failed to get channel ID: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Send a welcome message to the new channel
-	welcomeMessage := "Welcome to " + channelName + ": No alert left behind with our AI expert investigator"
-	if err := sendWelcomeMessage(token, teamID, channelID, welcomeMessage); err != nil {
-		log.Printf("Failed to send welcome message: %v", err)
-		http.Error(w, "Failed to send welcome message: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprintf(w, "Channel '"+channelName+"' created successfully in the selected team.")
+	w.WriteHeader(http.StatusOK)
 }
 
-func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "auth-session")
+func handleNewUserMessage(activity Activity) {
+	conversationID := activity.Conversation.ID
+	userName := activity.From.Name
+
+	// Record the user's message
+	err := RecordUserMessage(activity)
 	if err != nil {
-		log.Printf("Failed to get session: %v", err)
-		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		log.Printf("Failed to record user message: %v", err)
+	}
+
+	// Send personalized welcome message
+	welcomeMessage := fmt.Sprintf("Hello **%s**, I hope you are having a great day!\n\n I am Culminate Security's virtual assistant and I am here to respond to any questions you have.", userName)
+	err = sendBotMessage(conversationID, welcomeMessage)
+	if err != nil {
+		log.Printf("Failed to send welcome message to user %s: %v", userName, err)
+	}
+
+	// Send welcome card
+	err = sendWelcomeCardToConversation(conversationID, userName)
+	if err != nil {
+		log.Printf("Failed to send welcome card to user %s: %v", userName, err)
+	}
+}
+
+func handleCardResponse(w http.ResponseWriter, activity Activity) {
+	if activity.Value.UserQuestion == "" {
+		log.Println("Received empty question, ignoring")
 		return
 	}
 
-	// Clear the session
-	clearSession(session, r, w)
+	log.Printf("Received question from user %s: %s", activity.From.Name, activity.Value.UserQuestion)
 
-	// Redirect to login
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
-}
-
-// renderTeamSelectionPage renders the HTML page for team selection
-func renderTeamSelectionPage(w http.ResponseWriter, email string, teams []map[string]interface{}) {
-	teamSelectionHTML := buildTeamSelectionHTML(teams)
-	fmt.Fprintf(w, `
-	<html>
-	<body>
-		<p>Your Email: %s</p>
-		<p>Select the team you want your report in:</p>
-		<form action="/select-team" method="POST">
-			%s
-			<button type="submit">Select Team</button>
-		</form>
-	</body>
-	</html>`, email, teamSelectionHTML)
-}
-
-func buildTeamSelectionHTML(teams []map[string]interface{}) string {
-	var sb strings.Builder
-	for _, team := range teams {
-		id := team["id"].(string)
-		name := team["displayName"].(string)
-		sb.WriteString(fmt.Sprintf(`<input type="radio" name="team" value="%s">%s<br>`, id, name))
+	// Record the user's question
+	err := RecordUserMessage(activity)
+	if err != nil {
+		log.Printf("Failed to record user question: %v", err)
 	}
-	return sb.String()
+
+	response := fmt.Sprintf("Thank you for your question, **%s**\n\n**Your Question:** '%s'\n\nOur team will get back to you shortly!", activity.From.Name, activity.Value.UserQuestion)
+
+	// Send and record the bot's response
+	err = sendBotMessage(activity.Conversation.ID, response)
+	if err != nil {
+		log.Printf("Failed to send bot message: %v", err)
+		http.Error(w, "Failed to send response", http.StatusInternalServerError)
+		return
+	}
+
+	// Record the bot's response
+	err = SendTeamsMessage(TeamsMessageRequest{
+		TeamsUserId: activity.From.ID,
+		Message:     response,
+		Context:     "Bot response to user question",
+	})
+	if err != nil {
+		log.Printf("Failed to record bot message: %v", err)
+	}
 }

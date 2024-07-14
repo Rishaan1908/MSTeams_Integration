@@ -1,0 +1,122 @@
+[
+  {
+    "event_time": "2024-07-14T06:45:10.4813755Z",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "",
+    "sender": "User",
+    "is_intended": null,
+    "response_status": "Received"
+  },
+  {
+    "event_time": "2024-07-14T06:45:32.078Z",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "hi",
+    "sender": "User",
+    "is_intended": null,
+    "response_status": "Received"
+  },
+  {
+    "event_time": "2024-07-13T23:45:33.124212-07:00",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "Thank you for your question, **Rishaan Ponna**\n\n**Your Question:** 'hi'\n\nOur team will get back to you shortly!",
+    "sender": "Bot",
+    "is_intended": null,
+    "response_status": "Sent"
+  },
+  {
+    "event_time": "2024-07-14T07:03:00.933Z",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "hi",
+    "sender": "User",
+    "is_intended": null,
+    "response_status": "Received"
+  },
+  {
+    "event_time": "2024-07-14T07:03:00.939Z",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "hi",
+    "sender": "User",
+    "is_intended": null,
+    "response_status": "Received"
+  },
+  {
+    "event_time": "2024-07-14T00:03:02.226008-07:00",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "Thank you for your question, **Rishaan Ponna**\n\n**Your Question:** 'hi'\n\nOur team will get back to you shortly!",
+    "sender": "Bot",
+    "is_intended": null,
+    "response_status": "Sent"
+  },
+  {
+    "event_time": "2024-07-14T00:03:02.282164-07:00",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "Thank you for your question, **Rishaan Ponna**\n\n**Your Question:** 'hi'\n\nOur team will get back to you shortly!",
+    "sender": "Bot",
+    "is_intended": null,
+    "response_status": "Sent"
+  },
+  {
+    "event_time": "2024-07-14T07:04:02.4957717Z",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "",
+    "sender": "User",
+    "is_intended": null,
+    "response_status": "Received"
+  },
+  {
+    "event_time": "2024-07-14T07:04:15.857Z",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "ni amma",
+    "sender": "User",
+    "is_intended": null,
+    "response_status": "Received"
+  },
+  {
+    "event_time": "2024-07-14T00:04:16.695445-07:00",
+    "case_number": 0,
+    "thread_number": 0,
+    "message_number": 0,
+    "teams_user_id": "29:1iQAVUDGJLy5g2o07I0hZWwfvxu8ZJWUHLg06YtNj0zucJNFlxXu4dzFteqn6Av1E6BvRhnOPXD2ChXgVbfLJ6Q",
+    "teams_user_email": "",
+    "message": "Thank you for your question, **Rishaan Ponna**\n\n**Your Question:** 'ni amma'\n\nOur team will get back to you shortly!",
+    "sender": "Bot",
+    "is_intended": null,
+    "response_status": "Sent"
+  }
+]
